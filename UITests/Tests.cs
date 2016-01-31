@@ -7,7 +7,7 @@ using Xamarin.UITest.Queries;
 
 namespace GrayscaleTime.UITests
 {
-	[TestFixture (Platform.Android)]
+	//[TestFixture (Platform.Android)]
 	[TestFixture (Platform.iOS)]
 	public class Tests
 	{
@@ -23,19 +23,34 @@ namespace GrayscaleTime.UITests
 		public void BeforeEachTest ()
 		{
 			app = AppInitializer.StartApp (platform);
+
 		}
 
 		[Test]
-		public void ClickingButtonTwiceShouldChangeItsLabel ()
+		public void AppLaunches ()
 		{
-			Func<AppQuery, AppQuery> button = c => c.Button ("myButton");
+			app.Screenshot ("First screen.");
 
-			app.Tap (button);
-			app.Tap (button);
-			AppResult[] results = app.Query (button);
-			app.Screenshot ("Button clicked twice.");
+			app.Repl ();
+		}
 
-			Assert.AreEqual ("2 clicks!", results [0].Text ?? results [0].Label);
+
+		[Test]
+		public void Tap_Grayscale()
+		{
+			Func<AppQuery, AppQuery> btnGrayscale = e => e.Marked("Grayscale");
+			app.Tap (btnGrayscale);
+
+
+			Func<AppQuery, AppQuery> lbScale = e => e.Class("UILabel");
+
+			AppResult[] results = app.WaitForElement (lbScale);
+
+			Assert.IsTrue (results.Any() );
+
+			var label = results.First ();
+
+			Assert.IsTrue (label.Label.StartsWith(@"tick:"));
 		}
 	}
 }
